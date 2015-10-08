@@ -21,7 +21,6 @@ var WebComponentDeps = function WebComponentDeps(options){
   this.sharing_threshold = options.sharing_threshold;
 };
 
-
 WebComponentDeps.prototype = {
   _getOptions: function() {
     var options = {};

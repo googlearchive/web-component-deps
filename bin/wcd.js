@@ -48,6 +48,13 @@ var cli = cliArgs([
     description: "Input file(s) to print dependencies of."
   },
   {
+    name: "output",
+    type: String,
+    alias: "o",
+    defaultValue: "",
+    description: "File to write output to. If undefined, output goes to stdout."
+  },
+  {
     name: "sharing_threshold",
     type: Number,
     alias: "s",
@@ -92,11 +99,29 @@ if (!endpoints || !endpoints.length) {
   process.exit(-1);
 }
 
+var writeOutput;
+var finish;
+if (options.output && options.output.length > 0) {
+  var fd = fs.openSync(options.output, 'w');
+  writeOutput = function(data) {
+    fs.writeSync(fd, data + "\n");
+  };
+  finish = function() {
+    fs.closeSync(fd);
+  }
+} else {
+  writeOutput = function(data) {
+    console.log(data);
+  };
+  finish = function() {
+  }
+}
+
 var deps = new WebComponentDeps(options);
 deps.deps().then(function(deps){
   deps.forEach(function(dep){
-    console.log(dep);
+    writeOutput(dep);
   });
 }).catch(function(err){
   console.error(err.stack);
-});
+}).then(finish);

@@ -48,6 +48,13 @@ var cli = cliArgs([
     description: "Input file(s) to print dependencies of."
   },
   {
+    name: "import",
+    type: Boolean,
+    description: (
+      'If specified, will generate <link rel="import" instead of just the URI.'
+    )
+  },
+  {
     name: "output",
     type: String,
     alias: "o",
@@ -120,6 +127,9 @@ if (options.output && options.output.length > 0) {
 var deps = new WebComponentDeps(options);
 deps.deps().then(function(deps){
   deps.forEach(function(dep){
+    if (options.import) {
+      dep = '<link rel="import" href="' + dep + '">'
+    }
     writeOutput(dep);
   });
 }).catch(function(err){
